@@ -345,14 +345,12 @@
             z-index: 0;
         }
 
-        #hero-frame {
+        #hero-canvas {
             position: absolute;
-            top: -10%;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 120%;
-            object-fit: cover;
-            will-change: transform;
+            height: 100%;
         }
 
         /* Large gradient fade — blends hero into next section */
@@ -1424,7 +1422,7 @@
     <!-- ==================== HERO — FIXED VIDEO BACKGROUND ==================== -->
     <div class="hero-fixed" id="heroFixed">
         <div class="hero-gradient-anim" id="heroGradient"></div>
-        <img id="hero-frame" src="../assets/frames/frame_001.jpg" alt="JO.CO Cafe">
+        <canvas id="hero-canvas"></canvas>
         <div class="hero-bottom-fade"></div>
     </div>
 
@@ -1824,9 +1822,9 @@
 
         // ===== LENIS SMOOTH SCROLL =====
         var lenis = new Lenis({
-            lerp: 0.07,
-            wheelMultiplier: 0.8,
-            touchMultiplier: 1.5,
+            lerp: 0.04,
+            wheelMultiplier: 0.7,
+            touchMultiplier: 1.2,
             smoothWheel: true
         });
 
@@ -1836,70 +1834,75 @@
         }
         requestAnimationFrame(raf);
 
-        // ===== SCROLL-DRIVEN FRAME SEQUENCE =====
-        // Hero is position:fixed. A 400vh spacer provides scroll distance.
-        // Scrolling through the spacer drives the 73-frame animation.
-        // The .page-content div scrolls OVER the fixed hero.
+        // ===== SCROLL-DRIVEN FRAME SEQUENCE (Canvas) =====
         (function() {
-            var heroImg = document.getElementById('hero-frame');
-            var heroFixed = document.getElementById('heroFixed');
+            var canvas = document.getElementById('hero-canvas');
+            var ctx = canvas.getContext('2d');
             var spacer = document.getElementById('heroSpacer');
 
             var TOTAL_FRAMES = 73;
-            var frameSrcs = [];
-            var preloaded = [];
-            var loadedCount = 0;
+            var preloaded = new Array(TOTAL_FRAMES);
             var lastFrame = -1;
-
-            // Build frame paths
-            for (var i = 1; i <= TOTAL_FRAMES; i++) {
-                var pad = i < 10 ? '00' + i : (i < 100 ? '0' + i : '' + i);
-                frameSrcs.push('../assets/frames/frame_' + pad + '.jpg');
-            }
-
-            // Preload all frames into browser cache
-            for (var j = 0; j < TOTAL_FRAMES; j++) {
-                (function(idx) {
-                    var img = new Image();
-                    img.onload = function() { loadedCount++; };
-                    img.src = frameSrcs[idx];
-                    preloaded[idx] = img;
-                })(j);
-            }
-
-            // Scroll progress through the spacer (0 to 1)
-            function getProgress() {
-                var spacerHeight = spacer.offsetHeight;
-                var scrollY = window.pageYOffset || document.documentElement.scrollTop;
-                var progress = scrollY / (spacerHeight - window.innerHeight);
-                return Math.max(0, Math.min(1, progress));
-            }
-
-            var smoothY = 0;
             var smoothFrame = 0;
 
+            // Size canvas to viewport with DPR
+            function sizeCanvas() {
+                var dpr = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                if (lastFrame >= 0 && preloaded[lastFrame]) drawFrame(preloaded[lastFrame]);
+            }
+            window.addEventListener('resize', sizeCanvas);
+            sizeCanvas();
+
+            // Draw image cover-fit onto canvas
+            function drawFrame(img) {
+                if (!img || !img.complete || !img.naturalWidth) return;
+                var cw = window.innerWidth;
+                var ch = window.innerHeight;
+                var scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+                var sw = img.naturalWidth * scale;
+                var sh = img.naturalHeight * scale;
+                ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
+            }
+
+            // Build frame paths and preload
+            for (var i = 0; i < TOTAL_FRAMES; i++) {
+                (function(idx) {
+                    var pad = (idx + 1) < 10 ? '00' + (idx + 1) : ((idx + 1) < 100 ? '0' + (idx + 1) : '' + (idx + 1));
+                    var img = new Image();
+                    img.onload = function() {
+                        preloaded[idx] = img;
+                        if (idx === 0 && lastFrame < 0) { drawFrame(img); lastFrame = 0; }
+                    };
+                    img.src = '../assets/frames/frame_' + pad + '.jpg';
+                })(i);
+            }
+
+            // Scroll progress (0 → 1)
+            function getProgress() {
+                var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                var spacerHeight = spacer.offsetHeight;
+                return Math.max(0, Math.min(1, scrollY / (spacerHeight - window.innerHeight)));
+            }
+
+            // Render loop — smooth lerp toward target frame
             function tick() {
                 requestAnimationFrame(tick);
 
                 var progress = getProgress();
-                var pastHero = window.pageYOffset > spacer.offsetHeight;
+                var targetFrame = progress * (TOTAL_FRAMES - 1);
 
-                // Map scroll to frame
-                var targetFrame = Math.round(progress * (TOTAL_FRAMES - 1));
-                smoothFrame += (targetFrame - smoothFrame) * 0.18;
+                // Smooth interpolation — lower = smoother
+                smoothFrame += (targetFrame - smoothFrame) * 0.1;
+
                 var frame = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(smoothFrame)));
 
-                // Swap frame
-                if (frame !== lastFrame && preloaded[frame] && preloaded[frame].complete) {
-                    heroImg.src = frameSrcs[frame];
+                if (frame !== lastFrame && preloaded[frame]) {
+                    drawFrame(preloaded[frame]);
                     lastFrame = frame;
                 }
-
-                // Parallax drift
-                var targetY = progress * -12;
-                smoothY += (targetY - smoothY) * 0.08;
-                heroImg.style.transform = 'translateY(' + smoothY + '%) translateZ(0)';
-
             }
 
             tick();
