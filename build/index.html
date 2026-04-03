@@ -1883,51 +1883,31 @@
         (function() {
             var loader = document.getElementById('loaderScreen');
             var bar = document.getElementById('loaderBar');
-            var displayPct = 0;
-            var targetPct = 0;
-            var done = false;
+            if (!loader || !bar) return;
 
-            // Smooth bar animation
-            function animateBar() {
-                if (done) return;
-                displayPct += (targetPct - displayPct) * 0.06;
-                bar.style.width = displayPct.toFixed(1) + '%';
-                requestAnimationFrame(animateBar);
+            // Animate bar from 0 → 100 over ~1.8s with easing
+            var start = performance.now();
+            var duration = 1800;
+
+            function animate(now) {
+                var elapsed = now - start;
+                var t = Math.min(1, elapsed / duration);
+                // Ease-out cubic
+                var eased = 1 - Math.pow(1 - t, 3);
+                bar.style.width = (eased * 100).toFixed(1) + '%';
+
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    // Bar is full — reveal
+                    setTimeout(function() {
+                        loader.classList.add('done');
+                        document.body.classList.remove('loading');
+                        window.scrollTo(0, 0);
+                    }, 200);
+                }
             }
-            requestAnimationFrame(animateBar);
-
-            function reveal() {
-                if (done) return;
-                done = true;
-                bar.style.transition = 'width 0.3s ease';
-                bar.style.width = '100%';
-                setTimeout(function() {
-                    loader.classList.add('done');
-                    document.body.classList.remove('loading');
-                    window.scrollTo(0, 0);
-                }, 400);
-            }
-
-            // Wait for fonts + window load (all images, scripts, etc.)
-            var fontsReady = false;
-            var windowReady = false;
-
-            function check() {
-                if (fontsReady) targetPct = 50;
-                if (windowReady) targetPct = 95;
-                if (fontsReady && windowReady) reveal();
-            }
-
-            if (document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(function() { fontsReady = true; check(); });
-            } else {
-                fontsReady = true;
-            }
-
-            window.addEventListener('load', function() { windowReady = true; check(); });
-
-            // Safety net
-            setTimeout(reveal, 6000);
+            requestAnimationFrame(animate);
         })();
 
         // ===== SCROLL REVEAL =====
