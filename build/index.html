@@ -10,6 +10,60 @@
     <!-- Lenis smooth scroll -->
     <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
     <style>
+        /* ========================
+           LOADING SCREEN
+        ======================== */
+        .loader-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #050505;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+        }
+
+        .loader-screen.done {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loader-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: 0.04em;
+            color: #f2f0eb;
+            margin-bottom: 2rem;
+        }
+
+        .loader-logo span {
+            color: #c4654a;
+        }
+
+        .loader-bar-track {
+            width: 120px;
+            height: 2px;
+            background: rgba(242, 240, 235, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loader-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c4654a, #d4a754);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        body.loading {
+            overflow: hidden;
+        }
+
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -1271,7 +1325,15 @@
         }
     </style>
 </head>
-<body>
+<body class="loading">
+
+    <!-- ==================== LOADING SCREEN ==================== -->
+    <div class="loader-screen" id="loaderScreen">
+        <div class="loader-logo">JO<span>.</span>CO</div>
+        <div class="loader-bar-track">
+            <div class="loader-bar-fill" id="loaderBar"></div>
+        </div>
+    </div>
 
     <!-- ==================== NAVIGATION ==================== -->
     <nav class="nav" id="nav">
@@ -1816,6 +1878,52 @@
             mobileMenu.classList.remove('open');
             document.body.style.overflow = '';
         }
+
+        // ===== LOADING SCREEN =====
+        (function() {
+            var loader = document.getElementById('loaderScreen');
+            var bar = document.getElementById('loaderBar');
+            var images = document.querySelectorAll('img');
+            var total = images.length + 1; // +1 for fonts
+            var loaded = 0;
+
+            function tick() {
+                loaded++;
+                var pct = Math.min(100, Math.round((loaded / total) * 100));
+                bar.style.width = pct + '%';
+                if (loaded >= total) reveal();
+            }
+
+            function reveal() {
+                // Small delay so bar visually hits 100%
+                setTimeout(function() {
+                    loader.classList.add('done');
+                    document.body.classList.remove('loading');
+                    window.scrollTo(0, 0);
+                }, 300);
+            }
+
+            // Track image loads
+            images.forEach(function(img) {
+                if (img.complete) { tick(); }
+                else {
+                    img.addEventListener('load', tick);
+                    img.addEventListener('error', tick);
+                }
+            });
+
+            // Track fonts
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(tick);
+            } else {
+                tick();
+            }
+
+            // Safety net — don't trap the user forever
+            setTimeout(function() {
+                if (!loader.classList.contains('done')) reveal();
+            }, 6000);
+        })();
 
         // ===== SCROLL REVEAL =====
         var revealElements = document.querySelectorAll('.reveal');
