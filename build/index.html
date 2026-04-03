@@ -1974,8 +1974,10 @@
 
         // ===== SCROLL INDICATOR =====
         var scrollInd = document.getElementById('scrollIndicator');
+        var heroSpacer = document.getElementById('heroSpacer');
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 100) {
+            var spacerBottom = heroSpacer.offsetTop + heroSpacer.offsetHeight;
+            if (window.scrollY + window.innerHeight >= spacerBottom) {
                 scrollInd.classList.add('hidden');
             } else {
                 scrollInd.classList.remove('hidden');
