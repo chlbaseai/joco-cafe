@@ -278,6 +278,61 @@
             z-index: 1;
         }
 
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .scroll-indicator.hidden {
+            opacity: 0;
+        }
+
+        .scroll-indicator span {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--cream-faint);
+        }
+
+        .scroll-mouse {
+            width: 20px;
+            height: 32px;
+            border: 1.5px solid var(--cream-faint);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .scroll-mouse::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 6px;
+            background: var(--cream-dim);
+            border-radius: 2px;
+            animation: scrollBounce 1.8s ease-in-out infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { top: 6px; opacity: 1; }
+            50% { top: 16px; opacity: 0.3; }
+        }
+
         .hero-fixed {
             position: fixed;
             top: 0;
@@ -1281,6 +1336,7 @@
         }
 
         @media (max-width: 768px) {
+            .hero-scroll-spacer { height: 250vh; }
             .nav-links, .nav-phone { display: none; }
             .hamburger { display: flex; }
 
@@ -1370,6 +1426,12 @@
         <div class="hero-gradient-anim" id="heroGradient"></div>
         <img id="hero-frame" src="../assets/frames/frame_001.jpg" alt="JO.CO Cafe">
         <div class="hero-bottom-fade"></div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator" id="scrollIndicator">
+        <span>Scroll</span>
+        <div class="scroll-mouse"></div>
     </div>
 
     <!-- Scroll spacer — scrolling through this drives the video frames -->
@@ -1909,6 +1971,16 @@
             }
             requestAnimationFrame(animate);
         })();
+
+        // ===== SCROLL INDICATOR =====
+        var scrollInd = document.getElementById('scrollIndicator');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 100) {
+                scrollInd.classList.add('hidden');
+            } else {
+                scrollInd.classList.remove('hidden');
+            }
+        }, { passive: true });
 
         // ===== SCROLL REVEAL =====
         var revealElements = document.querySelectorAll('.reveal');
