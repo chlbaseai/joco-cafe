@@ -1795,13 +1795,11 @@
                 frameSrcs.push('../assets/frames/frame_' + pad + '.jpg');
             }
 
-            // Preload all frames — feed progress into global loader
-            siteLoader.register(TOTAL_FRAMES);
+            // Preload all frames into browser cache
             for (var j = 0; j < TOTAL_FRAMES; j++) {
                 (function(idx) {
                     var img = new Image();
-                    img.onload = function() { loadedCount++; siteLoader.tick(); };
-                    img.onerror = function() { siteLoader.tick(); };
+                    img.onload = function() { loadedCount++; };
                     img.src = frameSrcs[idx];
                     preloaded[idx] = img;
                 })(j);
@@ -1882,71 +1880,54 @@
         }
 
         // ===== LOADING SCREEN =====
-        // Global loader — frame preloading and page images both feed into this
-        var siteLoader = {
-            el: document.getElementById('loaderScreen'),
-            bar: document.getElementById('loaderBar'),
-            total: 0,
-            loaded: 0,
-            displayPct: 0,
-            done: false,
+        (function() {
+            var loader = document.getElementById('loaderScreen');
+            var bar = document.getElementById('loaderBar');
+            var displayPct = 0;
+            var targetPct = 0;
+            var done = false;
 
-            register: function(count) { this.total += count; },
-            tick: function() {
-                this.loaded++;
-                if (this.loaded >= this.total && !this.done) this.finish();
-            },
-            finish: function() {
-                this.done = true;
-                // Animate bar to 100 then reveal
-                this.displayPct = 100;
-                this.bar.style.width = '100%';
-                var self = this;
+            // Smooth bar animation
+            function animateBar() {
+                if (done) return;
+                displayPct += (targetPct - displayPct) * 0.06;
+                bar.style.width = displayPct.toFixed(1) + '%';
+                requestAnimationFrame(animateBar);
+            }
+            requestAnimationFrame(animateBar);
+
+            function reveal() {
+                if (done) return;
+                done = true;
+                bar.style.transition = 'width 0.3s ease';
+                bar.style.width = '100%';
                 setTimeout(function() {
-                    self.el.classList.add('done');
+                    loader.classList.add('done');
                     document.body.classList.remove('loading');
                     window.scrollTo(0, 0);
                 }, 400);
             }
-        };
 
-        // Smooth bar animation — lerps toward real progress
-        (function() {
-            function animateBar() {
-                if (siteLoader.done) return;
-                var realPct = siteLoader.total > 0
-                    ? (siteLoader.loaded / siteLoader.total) * 100
-                    : 0;
-                siteLoader.displayPct += (realPct - siteLoader.displayPct) * 0.08;
-                siteLoader.bar.style.width = Math.min(99, siteLoader.displayPct).toFixed(1) + '%';
-                requestAnimationFrame(animateBar);
+            // Wait for fonts + window load (all images, scripts, etc.)
+            var fontsReady = false;
+            var windowReady = false;
+
+            function check() {
+                if (fontsReady) targetPct = 50;
+                if (windowReady) targetPct = 95;
+                if (fontsReady && windowReady) reveal();
             }
-            requestAnimationFrame(animateBar);
-        })();
-
-        // Register page images + fonts
-        (function() {
-            var images = document.querySelectorAll('img');
-            siteLoader.register(images.length + 1); // +1 for fonts
-
-            images.forEach(function(img) {
-                if (img.complete) { siteLoader.tick(); }
-                else {
-                    img.addEventListener('load', function() { siteLoader.tick(); });
-                    img.addEventListener('error', function() { siteLoader.tick(); });
-                }
-            });
 
             if (document.fonts && document.fonts.ready) {
-                document.fonts.ready.then(function() { siteLoader.tick(); });
+                document.fonts.ready.then(function() { fontsReady = true; check(); });
             } else {
-                siteLoader.tick();
+                fontsReady = true;
             }
 
+            window.addEventListener('load', function() { windowReady = true; check(); });
+
             // Safety net
-            setTimeout(function() {
-                if (!siteLoader.done) siteLoader.finish();
-            }, 8000);
+            setTimeout(reveal, 6000);
         })();
 
         // ===== SCROLL REVEAL =====
