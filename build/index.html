@@ -1845,22 +1845,29 @@
             var lastFrame = -1;
             var smoothFrame = 0;
 
-            // Size canvas to viewport with DPR
-            function sizeCanvas() {
-                var dpr = Math.min(window.devicePixelRatio || 1, 2);
-                canvas.width = window.innerWidth * dpr;
-                canvas.height = window.innerHeight * dpr;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                if (lastFrame >= 0 && preloaded[lastFrame]) drawFrame(preloaded[lastFrame]);
-            }
-            window.addEventListener('resize', sizeCanvas);
-            sizeCanvas();
+            // Size canvas once — lock dimensions to avoid mobile browser chrome shifts
+            var dpr = Math.min(window.devicePixelRatio || 1, 2);
+            var cw = window.innerWidth;
+            var ch = window.innerHeight;
+            canvas.width = cw * dpr;
+            canvas.height = ch * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            // Only resize on orientation change, not scroll-triggered viewport changes
+            window.addEventListener('orientationchange', function() {
+                setTimeout(function() {
+                    cw = window.innerWidth;
+                    ch = window.innerHeight;
+                    canvas.width = cw * dpr;
+                    canvas.height = ch * dpr;
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    if (lastFrame >= 0 && preloaded[lastFrame]) drawFrame(preloaded[lastFrame]);
+                }, 200);
+            });
 
             // Draw image cover-fit onto canvas
             function drawFrame(img) {
                 if (!img || !img.complete || !img.naturalWidth) return;
-                var cw = window.innerWidth;
-                var ch = window.innerHeight;
                 var scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
                 var sw = img.naturalWidth * scale;
                 var sh = img.naturalHeight * scale;
