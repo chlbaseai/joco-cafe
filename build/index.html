@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JO.CO — A Taste of Portugal in Sussex</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+    <!-- Lenis smooth scroll -->
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #0a0a0a;
+            --black-deep: #050505;
+            --charcoal: #141414;
+            --dark-mid: #1a1a1a;
+            --cream: #f2f0eb;
+            --cream-dim: rgba(242, 240, 235, 0.7);
+            --cream-faint: rgba(242, 240, 235, 0.4);
+            --cream-ghost: rgba(242, 240, 235, 0.1);
+            --terracotta: #c4654a;
+            --terracotta-soft: #d4856e;
+            --navy: #2a4a6b;
+            --navy-light: #3d6d9e;
+            --amber: #d4a754;
+            --amber-soft: #e0bf7a;
+            --sage: #6b8f71;
+            --sage-light: #8fb896;
+            --violet: #7b6b99;
+            --rose: #c47a8a;
+        }
+
+        html {
+            scroll-behavior: auto;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--black-deep);
+            color: var(--cream);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========================
+           NAVIGATION
+        ======================== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mix-blend-mode: difference;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav.scrolled {
+            mix-blend-mode: normal;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1rem 3rem;
+            border-bottom: 1px solid var(--cream-ghost);
+        }
+
+        .nav-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.75rem;
+            letter-spacing: 0.04em;
+            color: var(--cream);
+            text-decoration: none;
+        }
+
+        .nav-logo span {
+            color: var(--terracotta);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--cream);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--amber);
+        }
+
+        .nav-cta {
+            padding: 0.75rem 1.75rem;
+            border: 1px solid var(--cream-faint);
+            border-radius: 100px;
+            font-size: 0.6875rem !important;
+            letter-spacing: 0.2em !important;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--cream);
+            color: var(--black) !important;
+            border-color: var(--cream);
+        }
+
+        .nav-phone {
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            color: var(--cream-dim);
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 200;
+            background: none;
+            border: none;
+            padding: 8px;
+        }
+
+        .hamburger span {
+            width: 28px;
+            height: 1.5px;
+            background: var(--cream);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
+        }
+
+        .hamburger.active span:first-child {
+            transform: rotate(45deg) translate(4px, 5px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:last-child {
+            transform: rotate(-45deg) translate(4px, -5px);
+        }
+
+        /* Mobile menu overlay */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--black);
+            z-index: 150;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .mobile-menu.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .mobile-menu a {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 700;
+            color: var(--cream);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--terracotta);
+        }
+
+        .mobile-menu .mobile-meta {
+            margin-top: 3rem;
+            font-size: 0.875rem;
+            color: var(--cream-faint);
+            line-height: 2;
+        }
+
+        .mobile-menu .mobile-meta a {
+            font-size: 0.875rem;
+            font-weight: 400;
+            display: inline;
+        }
+
+        /* ========================
+           HERO — SCROLL-DRIVEN VIDEO
+        ======================== */
+        .hero-scroll-spacer {
+            position: relative;
+            height: 400vh;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .hero-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: var(--black-deep);
+            z-index: 0;
+        }
+
+        #hero-frame {
+            position: absolute;
+            top: -10%;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            object-fit: cover;
+            will-change: transform;
+        }
+
+        /* Large gradient fade — blends hero into next section */
+        .hero-bottom-fade {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50vh;
+            background: linear-gradient(to top, var(--black) 0%, rgba(10, 10, 10, 0.9) 25%, rgba(10, 10, 10, 0.5) 55%, transparent 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+
+        /* ========================
+           ANIMATED GRADIENT SYSTEM
+        ======================== */
+        /* Breathing radial gradient behind the hero */
+        .hero-gradient-anim {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            opacity: 0;
+            animation: gradientFadeIn 2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.5s forwards;
+        }
+
+        @keyframes gradientFadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Section gradient flow — replaces hard black/charcoal cuts */
+        .section-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* Each section gets a subtle colored radial glow */
+        .section-glow::before {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.07;
+        }
+
+        /* Gradient connectors between sections */
+        .section-gradient-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .section-gradient-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Everything after the hero scrolls OVER the fixed video */
+        .page-content {
+            position: relative;
+            z-index: 2;
+            background: transparent;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.125rem 2.5rem;
+            background: var(--cream);
+            color: var(--black);
+            border: none;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(242, 240, 235, 0.15);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-primary:hover svg {
+            transform: translateX(3px);
+        }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.125rem 2rem;
+            background: transparent;
+            color: var(--cream);
+            border: 1px solid var(--cream-faint);
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.6875rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-ghost:hover {
+            background: var(--cream-ghost);
+            border-color: var(--cream-dim);
+        }
+
+
+        /* ========================
+           MARQUEE
+        ======================== */
+        .marquee-section {
+            position: relative;
+            padding: 1.25rem 0;
+            overflow: hidden;
+            border-top: 1px solid var(--cream-ghost);
+            border-bottom: 1px solid var(--cream-ghost);
+            background: linear-gradient(180deg, #080808 0%, #0d0d0d 100%);
+        }
+
+        .marquee-track {
+            display: flex;
+            animation: marqueeScroll 40s linear infinite;
+            width: max-content;
+        }
+
+        .marquee-item {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 0 2rem;
+            white-space: nowrap;
+        }
+
+        .marquee-item span {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--cream-faint);
+        }
+
+        .marquee-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--terracotta);
+            flex-shrink: 0;
+        }
+
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ========================
+           SHARED SECTION STYLES
+        ======================== */
+        .section {
+            padding: clamp(5rem, 12vw, 10rem) clamp(1.5rem, 5vw, 4rem);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.625rem;
+            font-weight: 600;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 1.25rem;
+        }
+
+        .section-heading {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-body {
+            font-size: 0.9375rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--cream-dim);
+            max-width: 520px;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.vis {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section dividers — now softer */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(242, 240, 235, 0.06), transparent);
+            margin: 0;
+        }
+
+        /* ========================
+           ABOUT SECTION
+        ======================== */
+        .about-section {
+            background: linear-gradient(180deg, #0d0d0d 0%, #0f100f 40%, #110f0e 70%, #0d0d0d 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Terracotta glow — top right */
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -200px;
+            width: 700px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(196, 101, 74, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(3rem, 6vw, 6rem);
+            align-items: center;
+        }
+
+        .about-text {
+            max-width: 500px;
+        }
+
+        .about-text .section-body {
+            margin-bottom: 2rem;
+        }
+
+        .text-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--amber);
+            text-decoration: none;
+            transition: gap 0.4s ease;
+        }
+
+        .text-link:hover {
+            gap: 1.25rem;
+        }
+
+        .text-link::after {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--amber);
+            transition: width 0.4s ease;
+        }
+
+        .text-link:hover::after {
+            width: 56px;
+        }
+
+        .about-images {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .about-img-main {
+            width: 80%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .about-img-accent {
+            position: absolute;
+            bottom: -2rem;
+            left: -1rem;
+            width: 45%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 4px solid var(--black);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .about-badge {
+            position: absolute;
+            top: -1rem;
+            right: 2rem;
+            width: 100px;
+            height: 100px;
+            background: var(--terracotta);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: badgeSpin 20s linear infinite;
+        }
+
+        .about-badge .rating {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 500;
+            line-height: 1;
+            color: var(--cream);
+        }
+
+        .about-badge .stars {
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            color: var(--amber-soft);
+        }
+
+        @keyframes badgeSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ========================
+           MENU HIGHLIGHTS
+        ======================== */
+        .menu-section {
+            background: linear-gradient(180deg, #0d0d0d 0%, #121210 30%, #13120f 60%, #0f0f0f 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Amber glow — center left */
+        .menu-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -200px;
+            transform: translateY(-50%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 167, 84, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: clamp(3rem, 5vw, 5rem);
+        }
+
+        .menu-gallery {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 1.25rem;
+        }
+
+        .menu-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .menu-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .menu-card:hover img {
+            transform: scale(1.06);
+        }
+
+        .menu-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(5, 5, 5, 0.85), transparent);
+        }
+
+        .menu-card-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.75rem;
+            font-weight: 300;
+            color: var(--amber);
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+        }
+
+        .menu-card-desc {
+            font-size: 0.8125rem;
+            color: var(--cream-dim);
+            font-weight: 300;
+        }
+
+        .menu-card:first-child {
+            grid-row: 1 / 3;
+        }
+
+        .menu-card:first-child .menu-card-title {
+            font-size: 1.75rem;
+        }
+
+        /* Color accent strips on cards */
+        .menu-card .color-strip {
+            position: absolute;
+            top: 1.25rem;
+            left: 1.25rem;
+            width: 3px;
+            height: 40px;
+            border-radius: 2px;
+        }
+
+        .menu-card:nth-child(1) .color-strip { background: var(--terracotta); }
+        .menu-card:nth-child(2) .color-strip { background: var(--amber); }
+        .menu-card:nth-child(3) .color-strip { background: var(--navy-light); }
+        .menu-card:nth-child(4) .color-strip { background: var(--sage); }
+        .menu-card:nth-child(5) .color-strip { background: var(--rose); }
+
+        /* ========================
+           EXPERIENCE SECTION
+        ======================== */
+        .experience-section {
+            background: linear-gradient(180deg, #0f0f0f 0%, #0e100f 30%, #0d0f10 60%, #0c0c0c 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Navy glow — bottom right */
+        .experience-section::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            right: -150px;
+            width: 600px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(42, 74, 107, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .experience-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(3rem, 6vw, 6rem);
+            align-items: center;
+        }
+
+        .experience-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .feature-item {
+            padding: 1.5rem;
+            background: rgba(242, 240, 235, 0.04);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 16px;
+            border: 1px solid rgba(242, 240, 235, 0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-item:hover {
+            border-color: rgba(242, 240, 235, 0.08);
+            background: rgba(242, 240, 235, 0.06);
+        }
+
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+
+        .feature-item:nth-child(1) .feature-icon { background: rgba(196, 101, 74, 0.15); color: var(--terracotta); }
+        .feature-item:nth-child(2) .feature-icon { background: rgba(42, 74, 107, 0.15); color: var(--navy-light); }
+        .feature-item:nth-child(3) .feature-icon { background: rgba(212, 167, 84, 0.15); color: var(--amber); }
+        .feature-item:nth-child(4) .feature-icon { background: rgba(107, 143, 113, 0.15); color: var(--sage-light); }
+
+        .feature-title {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            margin-bottom: 0.375rem;
+        }
+
+        .feature-desc {
+            font-size: 0.8125rem;
+            font-weight: 300;
+            color: var(--cream-faint);
+            line-height: 1.5;
+        }
+
+        .experience-img-wrap {
+            position: relative;
+        }
+
+        .experience-img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            border-radius: 24px;
+        }
+
+        .experience-img-accent {
+            position: absolute;
+            top: -2rem;
+            right: -2rem;
+            width: 50%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 4px solid var(--black);
+        }
+
+        /* ========================
+           REVIEWS
+        ======================== */
+        .reviews-section {
+            background: linear-gradient(180deg, #0c0c0c 0%, #11100e 40%, #12100d 60%, #0e0e0e 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Amber/rose glow — center */
+        .reviews-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(196, 122, 138, 0.04) 0%, rgba(212, 167, 84, 0.03) 40%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .reviews-stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .review-stat-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 300;
+            line-height: 1;
+            color: var(--cream);
+        }
+
+        .review-stat-label {
+            font-size: 0.625rem;
+            font-weight: 500;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--cream-faint);
+            margin-top: 0.5rem;
+        }
+
+        .review-stars {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .review-stars svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--amber);
+        }
+
+        .review-divider {
+            width: 1px;
+            height: 64px;
+            background: linear-gradient(to bottom, transparent, var(--amber), transparent);
+        }
+
+        .review-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.6;
+            color: var(--cream-dim);
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .review-author {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--amber);
+        }
+
+        /* ========================
+           CONTACT / HOURS
+        ======================== */
+        .contact-section {
+            background: linear-gradient(180deg, #0e0e0e 0%, #0f0e0d 40%, #100f0e 60%, #0b0b0b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sage glow — left */
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(107, 143, 113, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: clamp(3rem, 5vw, 5rem);
+        }
+
+        .contact-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(242, 240, 235, 0.06);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-card:hover {
+            border-color: rgba(242, 240, 235, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .contact-card-header {
+            font-size: 0.625rem;
+            font-weight: 600;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--cream-ghost);
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.625rem 0;
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: var(--cream-dim);
+            border-bottom: 1px solid rgba(242, 240, 235, 0.03);
+        }
+
+        .hours-row:last-child {
+            border-bottom: none;
+        }
+
+        .hours-row .day {
+            font-weight: 500;
+            color: var(--cream);
+        }
+
+        .hours-row.closed .time {
+            color: var(--terracotta-soft);
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+        }
+
+        .contact-info-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--cream-ghost);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-info-icon svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--cream-dim);
+        }
+
+        .contact-info-text {
+            font-size: 0.875rem;
+            font-weight: 300;
+            color: var(--cream-dim);
+            line-height: 1.5;
+        }
+
+        .contact-info-text a {
+            color: var(--cream);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-info-text a:hover {
+            color: var(--amber);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--cream-ghost);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: rgba(242, 240, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .social-link svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--cream-dim);
+        }
+
+        /* ========================
+           FINAL CTA
+        ======================== */
+        .cta-section {
+            background: linear-gradient(180deg, #0b0b0b 0%, #0d0c0a 50%, #080808 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(196, 101, 74, 0.12) 0%, rgba(212, 167, 84, 0.06) 40%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-heading {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .cta-body {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--cream-dim);
+            max-width: 480px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        /* ========================
+           FOOTER
+        ======================== */
+        .footer {
+            padding: 2.5rem clamp(1.5rem, 5vw, 4rem);
+            border-top: 1px solid rgba(242, 240, 235, 0.04);
+            background: #060606;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 0.04em;
+            color: var(--cream-faint);
+        }
+
+        .footer-logo span {
+            color: var(--terracotta-soft);
+            opacity: 0.6;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            font-size: 0.75rem;
+            color: var(--cream-faint);
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--cream);
+        }
+
+        .footer-copy {
+            font-size: 0.75rem;
+            color: rgba(242, 240, 235, 0.25);
+            font-weight: 300;
+        }
+
+        /* ========================
+           FLOATING BOOK BUTTON
+        ======================== */
+        .floating-cta {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 90;
+            padding: 1rem 2rem;
+            background: var(--terracotta);
+            color: var(--cream);
+            border: none;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(196, 101, 74, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+
+        .floating-cta.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .floating-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(196, 101, 74, 0.4);
+        }
+
+        /* ========================
+           RESPONSIVE
+        ======================== */
+        @media (max-width: 1024px) {
+            .menu-gallery {
+                grid-template-columns: 1fr 1fr;
+            }
+            .menu-card:first-child {
+                grid-row: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-phone { display: none; }
+            .hamburger { display: flex; }
+
+            .nav { padding: 1.25rem 1.5rem; }
+            .nav.scrolled { padding: 0.875rem 1.5rem; }
+
+
+            .about-grid,
+            .experience-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .about-images { order: -1; }
+
+            .menu-gallery {
+                grid-template-columns: 1fr;
+            }
+
+            .reviews-stats { flex-direction: column; gap: 1.5rem; }
+            .review-divider { width: 48px; height: 1px; background: linear-gradient(to right, transparent, var(--amber), transparent); }
+
+            .contact-grid { grid-template-columns: 1fr; }
+
+            .experience-features { grid-template-columns: 1fr; }
+
+            .footer-inner { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; }
+
+            .about-img-accent { display: none; }
+            .experience-img-accent { display: none; }
+
+            .floating-cta {
+                bottom: 1rem;
+                right: 1rem;
+                padding: 0.875rem 1.5rem;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== NAVIGATION ==================== -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">JO<span>.</span>CO</a>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="https://deliveroo.co.uk/menu/crawley/handcross/joco-cafe" target="_blank" rel="noopener" class="nav-cta">Order Now</a></li>
+        </ul>
+        <span class="nav-phone">+44 1444 401030</span>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#about" onclick="closeMenu()">About</a>
+        <a href="#menu" onclick="closeMenu()">Menu</a>
+        <a href="#reviews" onclick="closeMenu()">Reviews</a>
+        <a href="#contact" onclick="closeMenu()">Contact</a>
+        <a href="https://deliveroo.co.uk/menu/crawley/handcross/joco-cafe" target="_blank" rel="noopener" onclick="closeMenu()">Order on Deliveroo</a>
+        <div class="mobile-meta">
+            <a href="tel:+441444401030">+44 1444 401030</a><br>
+            The Forge Garage, Handcross<br>
+            West Sussex, RH17 6BJ
+        </div>
+    </div>
+
+    <!-- ==================== HERO — FIXED VIDEO BACKGROUND ==================== -->
+    <div class="hero-fixed" id="heroFixed">
+        <div class="hero-gradient-anim" id="heroGradient"></div>
+        <img id="hero-frame" src="../assets/frames/frame_001.jpg" alt="JO.CO Cafe">
+        <div class="hero-bottom-fade"></div>
+    </div>
+
+    <!-- Scroll spacer — scrolling through this drives the video frames -->
+    <div class="hero-scroll-spacer" id="heroSpacer"></div>
+
+
+    <!-- Everything below scrolls OVER the fixed hero -->
+    <div class="page-content">
+
+    <!-- ==================== MARQUEE ==================== -->
+    <section class="marquee-section" aria-hidden="true">
+        <div class="marquee-track">
+            <div class="marquee-item"><span>Pastel de Nata</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Flat White</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Cinnamon Buns</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Portuguese Rolls</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Brunch</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Cappuccino</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Sourdough</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Fresh Juices</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Handcross Village</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Pastel de Nata</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Flat White</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Cinnamon Buns</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Portuguese Rolls</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Brunch</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Cappuccino</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Sourdough</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Fresh Juices</span><div class="marquee-dot"></div></div>
+            <div class="marquee-item"><span>Handcross Village</span><div class="marquee-dot"></div></div>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT ==================== -->
+    <section class="section about-section" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <p class="section-label">Our Story</p>
+                    <h2 class="section-heading">Born in Portugal,<br>brewed in Sussex</h2>
+                    <p class="section-body">
+                        JO.CO is a Portuguese-inspired cafe nestled inside The Forge Garage in the heart of Handcross Village. Run by Michael, we bring the warmth and flavour of Lisbon's coffee culture to the English countryside — from our signature pasteis de nata to the strongest flat whites in West Sussex.
+                    </p>
+                    <p class="section-body" style="margin-top: 1rem;">
+                        What started as a single cafe has grown into two locations, with our newest branch in nearby Balcombe. But the heart stays the same: good coffee, honest food, and a place where the village comes together.
+                    </p>
+                    <a href="#contact" class="text-link">Find Us</a>
+                </div>
+                <div class="about-images reveal" style="transition-delay: 0.15s;">
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.15.png" alt="JO.CO Cafe interior with blue velvet chairs and living wall" class="about-img-main">
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.07.png" alt="JO.CO branded cappuccino with pastel de nata" class="about-img-accent">
+                    <div class="about-badge">
+                        <span class="rating">4.8</span>
+                        <span class="stars">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ==================== MENU HIGHLIGHTS ==================== -->
+    <section class="section menu-section" id="menu">
+        <div class="container">
+            <div class="menu-header reveal">
+                <div>
+                    <p class="section-label">What We Serve</p>
+                    <h2 class="section-heading">Menu Highlights</h2>
+                </div>
+                <a href="https://deliveroo.co.uk/menu/crawley/handcross/joco-cafe" target="_blank" rel="noopener" class="text-link">Full Menu</a>
+            </div>
+            <div class="menu-gallery">
+                <div class="menu-card reveal">
+                    <div class="color-strip"></div>
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.17.46.png" alt="Salmon bagel and poppy seed rolls on Portuguese azulejo tiles">
+                    <div class="menu-card-overlay">
+                        <p class="menu-card-num">01</p>
+                        <h3 class="menu-card-title">Portuguese Rolls</h3>
+                        <p class="menu-card-desc">Freshly baked with peppered pastrami, smoked salmon, or classic fillings</p>
+                    </div>
+                </div>
+                <div class="menu-card reveal" style="transition-delay: 0.08s;">
+                    <div class="color-strip"></div>
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.22.04.png" alt="Pancake stack with fried egg and edible flowers">
+                    <div class="menu-card-overlay">
+                        <p class="menu-card-num">02</p>
+                        <h3 class="menu-card-title">Brunch</h3>
+                        <p class="menu-card-desc">Full English, pancake stacks, eggs Benedict &amp; more</p>
+                    </div>
+                </div>
+                <div class="menu-card reveal" style="transition-delay: 0.16s;">
+                    <div class="color-strip"></div>
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.07.png" alt="JO.CO branded cappuccino art with pastel de nata">
+                    <div class="menu-card-overlay">
+                        <p class="menu-card-num">03</p>
+                        <h3 class="menu-card-title">Pastel de Nata</h3>
+                        <p class="menu-card-desc">Our signature — "as good as in Portugal"</p>
+                    </div>
+                </div>
+                <div class="menu-card reveal" style="transition-delay: 0.24s;">
+                    <div class="color-strip"></div>
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.22.18.png" alt="JO.CO cafe food selection">
+                    <div class="menu-card-overlay">
+                        <p class="menu-card-num">04</p>
+                        <h3 class="menu-card-title">Coffee</h3>
+                        <p class="menu-card-desc">Flat whites, cappuccinos, lattes — the best in Sussex</p>
+                    </div>
+                </div>
+                <div class="menu-card reveal" style="transition-delay: 0.32s;">
+                    <div class="color-strip"></div>
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.22.27.png" alt="Cakes and pastries display">
+                    <div class="menu-card-overlay">
+                        <p class="menu-card-num">05</p>
+                        <h3 class="menu-card-title">Cakes &amp; Pastries</h3>
+                        <p class="menu-card-desc">Homemade cinnamon buns, cakes &amp; sweet treats</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ==================== EXPERIENCE ==================== -->
+    <section class="section experience-section" id="experience">
+        <div class="container">
+            <div class="experience-grid">
+                <div class="reveal">
+                    <p class="section-label">The Experience</p>
+                    <h2 class="section-heading">More than<br>just coffee</h2>
+                    <p class="section-body">Housed in a beautifully converted forge, JO.CO brings together industrial character and Portuguese warmth. Every detail — from the hand-poured cappuccinos to the azulejo-tiled surfaces — is designed to transport you.</p>
+                    <div class="experience-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 8h1a4 4 0 110 8h-1M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+                            </div>
+                            <p class="feature-title">Artisan Coffee</p>
+                            <p class="feature-desc">Expertly pulled, always smooth</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            </div>
+                            <p class="feature-title">Two Locations</p>
+                            <p class="feature-desc">Handcross &amp; Balcombe</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                            </div>
+                            <p class="feature-title">Made With Love</p>
+                            <p class="feature-desc">Everything baked fresh daily</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <p class="feature-title">Village Heart</p>
+                            <p class="feature-desc">A true community staple</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="experience-img-wrap reveal" style="transition-delay: 0.15s;">
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.23.png" alt="JO.CO Cafe interior atmosphere" class="experience-img">
+                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.42.png" alt="JO.CO food presentation" class="experience-img-accent">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ==================== REVIEWS ==================== -->
+    <section class="section reviews-section" id="reviews">
+        <div class="container">
+            <p class="section-label reveal">What People Say</p>
+            <div class="reviews-stats reveal">
+                <div>
+                    <p class="review-stat-num">4.8</p>
+                    <div class="review-stars">
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <p class="review-stat-label">Google &mdash; 336 Reviews</p>
+                </div>
+                <div class="review-divider"></div>
+                <div>
+                    <p class="review-stat-num">5.0</p>
+                    <div class="review-stars">
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <p class="review-stat-label">TripAdvisor &mdash; 30 Reviews</p>
+                </div>
+            </div>
+            <div class="reveal">
+                <blockquote class="review-quote">"Brilliant place, great coffee and the pastries and cakes are ridiculously good. Lovely staff and decor — an absolute gem."</blockquote>
+                <p class="review-author">Ross Halliday</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ==================== CONTACT ==================== -->
+    <section class="section contact-section" id="contact">
+        <div class="container">
+            <p class="section-label reveal">Get In Touch</p>
+            <h2 class="section-heading reveal">Visit Us</h2>
+            <div class="contact-grid">
+                <div class="contact-card reveal">
+                    <p class="contact-card-header">Opening Hours</p>
+                    <div class="hours-row closed">
+                        <span class="day">Monday</span>
+                        <span class="time">Closed</span>
+                    </div>
+                    <div class="hours-row closed">
+                        <span class="day">Tuesday</span>
+                        <span class="time">Closed</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Wednesday</span>
+                        <span class="time">7:30 AM - 3:30 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Thursday</span>
+                        <span class="time">7:30 AM - 3:30 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Friday</span>
+                        <span class="time">7:30 AM - 3:30 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Saturday</span>
+                        <span class="time">7:30 AM - 3:30 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="day">Sunday</span>
+                        <span class="time">8:00 AM - 3:30 PM</span>
+                    </div>
+                </div>
+
+                <div class="contact-card reveal" style="transition-delay: 0.08s;">
+                    <p class="contact-card-header">Handcross</p>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <div class="contact-info-text">
+                            The Forge Garage<br>
+                            High St, Handcross<br>
+                            Haywards Heath RH17 6BJ
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                        </div>
+                        <div class="contact-info-text">
+                            <a href="tel:+441444401030">+44 1444 401030</a>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/jococafehandcross/" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
+                            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/joco_cafe/" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24"><path d="M16 4H8a4 4 0 00-4 4v8a4 4 0 004 4h8a4 4 0 004-4V8a4 4 0 00-4-4z"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+                        </a>
+                        <a href="https://www.tripadvisor.co.uk/Restaurant_Review-g2197773-d23354974-Reviews-Jo_co_Cafe-Handcross_West_Sussex_England.html" target="_blank" rel="noopener" class="social-link" aria-label="TripAdvisor">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 6v6l4 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="contact-card reveal" style="transition-delay: 0.16s;">
+                    <p class="contact-card-header">Balcombe</p>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <div class="contact-info-text">
+                            JO.CO Cafe Balcombe<br>
+                            Balcombe, West Sussex
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 8h1a4 4 0 110 8h-1M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+                        </div>
+                        <div class="contact-info-text">
+                            Our newest location — same great coffee, same Portuguese warmth.
+                        </div>
+                    </div>
+                    <a href="https://deliveroo.co.uk/menu/crawley/handcross/joco-cafe" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.75rem; margin-top: 2rem; padding: 1rem 2rem; background: var(--cream-ghost); border: 1px solid var(--cream-ghost); border-radius: 100px; color: var(--cream); text-decoration: none; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; transition: all 0.4s ease;">
+                        Order on Deliveroo
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FINAL CTA ==================== -->
+    <section class="section cta-section">
+        <div class="container" style="position: relative;">
+            <div class="cta-glow"></div>
+            <p class="section-label reveal">Come Say Hello</p>
+            <h2 class="cta-heading reveal">Your table is<br>waiting</h2>
+            <p class="cta-body reveal">Fresh pasteis de nata, strong coffee, and the warmest welcome in West Sussex. We are open Wednesday through Sunday.</p>
+            <div class="reveal">
+                <a href="#contact" class="btn-primary" style="background: var(--terracotta); color: var(--cream);">
+                    Find Us
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">JO<span>.</span>CO</div>
+            <ul class="footer-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <p class="footer-copy">&copy; 2026 JO.CO Cafe. All rights reserved.</p>
+        </div>
+    </footer>
+
+    </div><!-- end .page-content -->
+
+    <!-- Floating CTA -->
+    <a href="https://deliveroo.co.uk/menu/crawley/handcross/joco-cafe" target="_blank" rel="noopener" class="floating-cta" id="floatingCta">Order Now</a>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        // ===== ANIMATED BREATHING GRADIENT (behind hero video) =====
+        (function() {
+            var el = document.getElementById('heroGradient');
+            if (!el) return;
+
+            // JO.CO brand colors for the radial gradient
+            var colors = [
+                '#0A0A0A',       // deep black center
+                'rgba(196, 101, 74, 0.3)',   // terracotta
+                'rgba(212, 167, 84, 0.25)',  // amber
+                'rgba(196, 122, 138, 0.2)',  // rose
+                'rgba(42, 74, 107, 0.25)',   // navy
+                'rgba(107, 143, 113, 0.2)',  // sage
+                '#0A0A0A'        // black edge
+            ];
+            var stops = [0, 30, 45, 58, 72, 86, 100];
+            var baseWidth = 125;
+            var range = 5;
+            var speed = 0.02;
+            var width = baseWidth;
+            var dir = 1;
+
+            function animate() {
+                if (width >= baseWidth + range) dir = -1;
+                if (width <= baseWidth - range) dir = 1;
+                width += dir * speed;
+
+                var gradStr = stops.map(function(s, i) {
+                    return colors[i] + ' ' + s + '%';
+                }).join(', ');
+
+                el.style.background = 'radial-gradient(' + width + '% ' + (width + 20) + '% at 50% 30%, ' + gradStr + ')';
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        })();
+
+        // ===== LENIS SMOOTH SCROLL =====
+        var lenis = new Lenis({
+            lerp: 0.07,
+            wheelMultiplier: 0.8,
+            touchMultiplier: 1.5,
+            smoothWheel: true
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // ===== SCROLL-DRIVEN FRAME SEQUENCE =====
+        // Hero is position:fixed. A 400vh spacer provides scroll distance.
+        // Scrolling through the spacer drives the 73-frame animation.
+        // The .page-content div scrolls OVER the fixed hero.
+        (function() {
+            var heroImg = document.getElementById('hero-frame');
+            var heroFixed = document.getElementById('heroFixed');
+            var spacer = document.getElementById('heroSpacer');
+
+            var TOTAL_FRAMES = 73;
+            var frameSrcs = [];
+            var preloaded = [];
+            var loadedCount = 0;
+            var lastFrame = -1;
+
+            // Build frame paths
+            for (var i = 1; i <= TOTAL_FRAMES; i++) {
+                var pad = i < 10 ? '00' + i : (i < 100 ? '0' + i : '' + i);
+                frameSrcs.push('../assets/frames/frame_' + pad + '.jpg');
+            }
+
+            // Preload all frames into browser cache
+            for (var j = 0; j < TOTAL_FRAMES; j++) {
+                (function(idx) {
+                    var img = new Image();
+                    img.onload = function() { loadedCount++; };
+                    img.src = frameSrcs[idx];
+                    preloaded[idx] = img;
+                })(j);
+            }
+
+            // Scroll progress through the spacer (0 to 1)
+            function getProgress() {
+                var spacerHeight = spacer.offsetHeight;
+                var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                var progress = scrollY / (spacerHeight - window.innerHeight);
+                return Math.max(0, Math.min(1, progress));
+            }
+
+            var smoothY = 0;
+            var smoothFrame = 0;
+
+            function tick() {
+                requestAnimationFrame(tick);
+
+                var progress = getProgress();
+                var pastHero = window.pageYOffset > spacer.offsetHeight;
+
+                // Map scroll to frame
+                var targetFrame = Math.round(progress * (TOTAL_FRAMES - 1));
+                smoothFrame += (targetFrame - smoothFrame) * 0.18;
+                var frame = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(smoothFrame)));
+
+                // Swap frame
+                if (frame !== lastFrame && preloaded[frame] && preloaded[frame].complete) {
+                    heroImg.src = frameSrcs[frame];
+                    lastFrame = frame;
+                }
+
+                // Parallax drift
+                var targetY = progress * -12;
+                smoothY += (targetY - smoothY) * 0.08;
+                heroImg.style.transform = 'translateY(' + smoothY + '%) translateZ(0)';
+
+            }
+
+            tick();
+        })();
+
+        // ===== NAV SCROLL EFFECT =====
+        var nav = document.getElementById('nav');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 80) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }, { passive: true });
+
+        // ===== FLOATING CTA =====
+        var floatingCta = document.getElementById('floatingCta');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > window.innerHeight * 0.5) {
+                floatingCta.classList.add('visible');
+            } else {
+                floatingCta.classList.remove('visible');
+            }
+        }, { passive: true });
+
+        // ===== MOBILE MENU =====
+        var hamburger = document.getElementById('hamburger');
+        var mobileMenu = document.getElementById('mobileMenu');
+
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('open');
+            document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+        });
+
+        function closeMenu() {
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // ===== SCROLL REVEAL =====
+        var revealElements = document.querySelectorAll('.reveal');
+        var revealObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('vis');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        revealElements.forEach(function(el) {
+            revealObserver.observe(el);
+        });
+    </script>
+</body>
+</html>
