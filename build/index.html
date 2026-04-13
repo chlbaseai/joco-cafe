@@ -1479,8 +1479,8 @@
                     <a href="#contact" class="text-link">Find Us</a>
                 </div>
                 <div class="about-images reveal" style="transition-delay: 0.15s;">
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.15.png" alt="JO.CO Cafe interior with blue velvet chairs and living wall" class="about-img-main">
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.07.png" alt="JO.CO branded cappuccino with pastel de nata" class="about-img-accent">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.21.15.jpg" alt="JO.CO Cafe interior with blue velvet chairs and living wall" class="about-img-main" loading="lazy">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.21.07.jpg" alt="JO.CO branded cappuccino with pastel de nata" class="about-img-accent" loading="lazy">
                     <div class="about-badge">
                         <span class="rating">4.8</span>
                         <span class="stars">
@@ -1511,7 +1511,7 @@
             <div class="menu-gallery">
                 <div class="menu-card reveal">
                     <div class="color-strip"></div>
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.17.46.png" alt="Salmon bagel and poppy seed rolls on Portuguese azulejo tiles">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.17.46.jpg" alt="Salmon bagel and poppy seed rolls on Portuguese azulejo tiles" loading="lazy">
                     <div class="menu-card-overlay">
                         <p class="menu-card-num">01</p>
                         <h3 class="menu-card-title">Portuguese Rolls</h3>
@@ -1520,7 +1520,7 @@
                 </div>
                 <div class="menu-card reveal" style="transition-delay: 0.08s;">
                     <div class="color-strip"></div>
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.22.04.png" alt="Pancake stack with fried egg and edible flowers">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.22.04.jpg" alt="Pancake stack with fried egg and edible flowers" loading="lazy">
                     <div class="menu-card-overlay">
                         <p class="menu-card-num">02</p>
                         <h3 class="menu-card-title">Brunch</h3>
@@ -1529,7 +1529,7 @@
                 </div>
                 <div class="menu-card reveal" style="transition-delay: 0.16s;">
                     <div class="color-strip"></div>
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.07.png" alt="JO.CO branded cappuccino art with pastel de nata">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.21.07.jpg" alt="JO.CO branded cappuccino art with pastel de nata" loading="lazy">
                     <div class="menu-card-overlay">
                         <p class="menu-card-num">03</p>
                         <h3 class="menu-card-title">Pastel de Nata</h3>
@@ -1538,7 +1538,7 @@
                 </div>
                 <div class="menu-card reveal" style="transition-delay: 0.24s;">
                     <div class="color-strip"></div>
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.22.18.png" alt="JO.CO cafe food selection">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.22.18.jpg" alt="JO.CO cafe food selection" loading="lazy">
                     <div class="menu-card-overlay">
                         <p class="menu-card-num">04</p>
                         <h3 class="menu-card-title">Coffee</h3>
@@ -1547,7 +1547,7 @@
                 </div>
                 <div class="menu-card reveal" style="transition-delay: 0.32s;">
                     <div class="color-strip"></div>
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.22.27.png" alt="Cakes and pastries display">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.22.27.jpg" alt="Cakes and pastries display" loading="lazy">
                     <div class="menu-card-overlay">
                         <p class="menu-card-num">05</p>
                         <h3 class="menu-card-title">Cakes &amp; Pastries</h3>
@@ -1600,8 +1600,8 @@
                     </div>
                 </div>
                 <div class="experience-img-wrap reveal" style="transition-delay: 0.15s;">
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.23.png" alt="JO.CO Cafe interior atmosphere" class="experience-img">
-                    <img src="../assets/photos/Screenshot 2026-03-23 at 19.21.42.png" alt="JO.CO food presentation" class="experience-img-accent">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.21.23.jpg" alt="JO.CO Cafe interior atmosphere" class="experience-img" loading="lazy">
+                    <img src="../assets/photos-optimized/Screenshot 2026-03-23 at 19.21.42.jpg" alt="JO.CO food presentation" class="experience-img-accent" loading="lazy">
                 </div>
             </div>
         </div>
@@ -1840,10 +1840,12 @@
             var ctx = canvas.getContext('2d');
             var spacer = document.getElementById('heroSpacer');
 
-            var TOTAL_FRAMES = 73;
+            var TOTAL_FRAMES = 37;
             var preloaded = new Array(TOTAL_FRAMES);
+            var loading = new Array(TOTAL_FRAMES); // track which are being fetched
             var lastFrame = -1;
             var smoothFrame = 0;
+            var EAGER_COUNT = 5; // load first 5 immediately
 
             // Size canvas once — lock dimensions to avoid mobile browser chrome shifts
             var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -1874,18 +1876,25 @@
                 ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
             }
 
-            // Build frame paths and preload
-            for (var i = 0; i < TOTAL_FRAMES; i++) {
-                (function(idx) {
-                    var pad = (idx + 1) < 10 ? '00' + (idx + 1) : ((idx + 1) < 100 ? '0' + (idx + 1) : '' + (idx + 1));
-                    var img = new Image();
-                    img.onload = function() {
-                        preloaded[idx] = img;
-                        if (idx === 0 && lastFrame < 0) { drawFrame(img); lastFrame = 0; }
-                    };
-                    img.src = '../assets/frames/frame_' + pad + '.jpg';
-                })(i);
+            function framePath(idx) {
+                var n = idx + 1;
+                var pad = n < 10 ? '00' + n : (n < 100 ? '0' + n : '' + n);
+                return '../assets/frames-optimized/frame_' + pad + '.jpg';
             }
+
+            function loadFrame(idx) {
+                if (preloaded[idx] || loading[idx]) return;
+                loading[idx] = true;
+                var img = new Image();
+                img.onload = function() {
+                    preloaded[idx] = img;
+                    if (idx === 0 && lastFrame < 0) { drawFrame(img); lastFrame = 0; }
+                };
+                img.src = framePath(idx);
+            }
+
+            // Eagerly load first few frames
+            for (var i = 0; i < EAGER_COUNT; i++) { loadFrame(i); }
 
             // Scroll progress (0 → 1)
             function getProgress() {
@@ -1894,7 +1903,7 @@
                 return Math.max(0, Math.min(1, scrollY / (spacerHeight - window.innerHeight)));
             }
 
-            // Render loop — smooth lerp toward target frame
+            // Render loop — smooth lerp toward target frame + progressive loading
             function tick() {
                 requestAnimationFrame(tick);
 
@@ -1902,9 +1911,14 @@
                 var targetFrame = progress * (TOTAL_FRAMES - 1);
 
                 // Smooth interpolation — lower = smoother
-                smoothFrame += (targetFrame - smoothFrame) * 0.1;
+                smoothFrame += (targetFrame - smoothFrame) * 0.12;
 
                 var frame = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(smoothFrame)));
+
+                // Progressive load: fetch nearby frames (current ± 8)
+                var loadStart = Math.max(0, frame - 3);
+                var loadEnd = Math.min(TOTAL_FRAMES - 1, frame + 8);
+                for (var j = loadStart; j <= loadEnd; j++) { loadFrame(j); }
 
                 if (frame !== lastFrame && preloaded[frame]) {
                     drawFrame(preloaded[frame]);
